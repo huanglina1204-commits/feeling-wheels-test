@@ -5,34 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>大腦總部生存危機測驗 | Mood Mart</title>
     <style>
-        /* 基本版型 */
-        :root{
-            --accent:#ff6b6b;
-            --bg:#f7f9fc;
-            --card:#fff;
-            --muted:#666;
-        }
+        :root{ --accent:#ff6b6b; --bg:#f7f9fc; --card:#fff; --muted:#666; }
         *{box-sizing:border-box}
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg);
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background: var(--card);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 6px 22px rgba(0,0,0,0.08);
-            max-width: 640px;
-            width: 100%;
-            text-align: center;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 6px 22px rgba(0,0,0,0.08); max-width: 640px; width: 100%; text-align: center; }
         h1 { font-size: 24px; color: var(--accent); margin-bottom: 5px; }
         p.subtitle { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
         .progress-bar { font-size: 13px; color: #888; margin-bottom: 12px; font-weight: 700; }
@@ -81,160 +57,27 @@
 </div>
 
 <script>
-    // 完整題庫（19 題）
+    // 完整題庫（19 題），已修正內部引號以避免語法錯誤
     const allQuestions = [
-        {
-            question: "Q：學校舉辦大型晚會或舞蹈表演，輪到你上台前 5 分鐘，你在後台的狀態是？",
-            options: [
-                { text: "A. 心跳快得像要跳出胸口，瘋狂深呼吸確認動作，緊張到極點", type: "anxiety" },
-                { text: "B. 興奮到不行，跟夥伴擊掌大喊：「我們一定會超炸全場！」", type: "joy" },
-                { text: "C. 腦袋一片空白，手腳冰冷，超怕自己會不小心失誤出糗", type: "fear" }
-            ]
-        },
-        {
-            question: "Q：老師臨時指派你擔任班級活動總召，要負責管秩序和分配工作，你心裡想的是？",
-            options: [
-                { text: "A. 興奮！最喜歡統籌和規劃，馬上開始列分工表", type: "joy" },
-                { text: "B. 壓力山大，擔心自己做不好被大家私底下抱怨", type: "anxiety" },
-                { text: "C. 眼神死，心裡狂翻白眼：「為什麼找我，好麻煩想拒絕。"", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：辛苦排練很久的節目，表演結束後卻聽到臺下有人在小聲嫌棄，你的第一反應是？",
-            options: [
-                { text: "A. 氣到不行！很想直接衝下台理論：「有本事你來跳啊！」", type: "anger" },
-                { text: "B. 鼻子酸酸的，躲到後台角落難過，覺得努力白費了", type: "sadness" },
-                { text: "C. 面無表情地冷笑：「不懂欣賞就算了，隨便你們講。"", type: "disgust" }
-            ]
-        },
-        {
-            question: "Q：社團學弟妹練習時態度散漫、講話不聽，作為學長姐的你此時狀態是？",
-            options: [
-                { text: "A. 氣到理智線斷裂，直接開罵建立威嚴", type: "anger" },
-                { text: "B. 氣到心累，覺得帶不動乾脆放推不管了", type: "ennui" },
-                { text: "C. 一邊覺得生氣，一邊又擔心是不是自己沒把方法教好", type: "anxiety" }
-            ]
-        },
-        {
-            question: "Q：運動會大隊接力輪到你跑最後一棒，接棒時落後了，你的大腦瞬間運作是？",
-            options: [
-                { text: "A. 不管三七二十一，燃起全部鬥志狂奔追上去！", type: "joy" },
-                { text: "B. 緊張到腳步打結，大喊：「完蛋了要被全班笑死了！」", type: "fear" },
-                { text: "C. 邊跑邊覺得好累、好想放棄：「幹嘛把自己搞得這麼累……"", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：傳訊息給朋友問事情，對方明明在線上、已讀卻遲遲不回，你的內心劇場是？",
-            options: [
-                { text: "A. 焦慮炸裂：「我是不是講錯話惹他生氣了？他為什麼不回我？"", type: "anxiety" },
-                { text: "B. 心裡有股莫名的火氣：「愛回不回隨便你，跩什麼跩。」", type: "anger" },
-                { text: "C. 覺得有點孤單失落，心裡悶悶的", type: "sadness" }
-            ]
-        },
-        {
-            question: "Q：手遊抽卡或演唱會門票，朋友一發入魂，而你卻保底還抽到最爛的，你會？",
-            options: [
-                { text: "A. 氣到想把手機直接摔了，非洲人竟是我自己！", type: "anger" },
-                { text: "B. 心裡酸到不行，滿懷嫉妒：「憑什麼他運氣那麼好……"", type: "envy" },
-                { text: "C. 嘆口氣認命，反正我本來就是這種命運", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：發了一則精心挑選的限時動態，過了好幾小時瀏覽人數寥寥無幾，你會？",
-            options: [
-                { text: "A. 尷尬癌發作，覺得自己剛剛發的好做作、好丟臉，秒刪！", type: "embarrassment" },
-                { text: "B. 默默覺得有點失落，懷疑自己是不是被大家冷落了", type: "sadness" },
-                { text: "C. 完全不在乎，滑過去就忘記了", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：看到別人都在瘋某個流行迷因或穿搭，但你覺得超無聊，你的反應是？",
-            options: [
-                { text: "A. 滿臉問號，翻個白眼：「這到底哪裡好看，跟風盲目。"", type: "disgust" },
-                { text: "B. 雖然覺得無聊，但為了怕被當成異類，還是偷偷去了解一下", type: "fear" },
-                { text: "C. 隨便啦，大家高興就好，我走我自己的路", type: "joy" }
-            ]
-        },
-        {
-            question: "Q：深夜準備睡覺前又忍不住滑了一小時手機，看著時間越來越晚，你的心情是？",
-            options: [
-                { text: "A. 焦慮大爆炸：「死定了明天絕對爬不起來，黑眼圈一定超重！"", type: "anxiety" },
-                { text: "B. 充滿罪惡感，覺得自己好廢、意志力好低落", type: "sadness" },
-                { text: "C. 管他的，爽就好，繼續刷下一部短影片", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：大排長龍終於輪到你買最後一個想吃的麵包，結果在面前被前面的人買走，你當下會？",
-            options: [
-                { text: "A. 氣到想翻白眼，覺得今天運氣怎麼這麼背！", type: "anger" },
-                { text: "B. 委屈到快哭出來，今天怎麼連想吃個東西都不行……", type: "sadness" },
-                { text: "C. 算了，轉頭隨便買個餅乾也行，保持樂觀", type: "joy" }
-            ]
-        },
-        {
-            question: "Q：好不容易精心搭配了一套衣服出門，結果一到學校發現跟別人大撞衫，你心裡想？",
-            options: [
-                { text: "A. 尬到極點，恨不得立刻套上外套把衣服遮住", type: "embarrassment" },
-                { text: "B. 眼神死，心裡狂翻白眼：「真倒楣，竟然跟Ta撞衫。"", type: "disgust" },
-                { text: "C. 笑出來：「哇我們品味一樣耶！」甚至大方跟對方合照", type: "joy" }
-            ]
-        },
-        {
-            question: "Q：上課肚子餓得咕嚕咕嚕叫超級大聲，旁邊剛好一片安靜，你的第一反應是？",
-            options: [
-                { text: "A. 瞬間臉紅到耳根，覺得全班都在看我，尷尬到想原地蒸發", type: "embarrassment" },
-                { text: "B. 緊張到心跳加速，深怕被隔壁同學聽到會笑話我", type: "fear" },
-                { text: "C. 偷偷拿出零食以光速塞進嘴裡解決", type: "joy" }
-            ]
-        },
-        {
-            question: "Q：走在走廊上不小心左腳絆右腳，在眾人面前摔了一個大馬趴，你當下會？",
-            options: [
-                { text: "A. 尬到靈魂出竅，在地上裝死不想起來", type: "embarrassment" },
-                { text: "B. 迅速爬起來拍拍灰塵，大笑化解：「地心引力今天特別愛我！"", type: "joy" },
-                { text: "C. 覺得痛死又丟臉，眼眶含淚但硬要忍住", type: "sadness" }
-            ]
-        },
-        {
-            question: "Q：夜深人靜躺在床上時，突然想到自己上週講過一句超蠢的話，你的大腦會？",
-            options: [
-                { text: "A. 無限回放，焦慮到在床上滾來滾去：「天啊我當時怎麼會這樣講！"", type: "anxiety" },
-                { text: "B. 覺得自己好笨、好社交殘障，深深陷入憂鬱", type: "sadness" },
-                { text: "C. 一巴掌拍醒自己：「算了啦，反正別人隔天就忘記了！"", type: "joy" }
-            ]
-        },
-        {
-            question: "Q：看見身邊同學都有了明確夢想和目標，而自己卻還在混日子，你心裡的感受是？",
-            options: [
-                { text: "A. 感到一陣恐慌與焦慮，擔心自己會被世界拋棄", type: "anxiety" },
-                { text: "B. 心裡酸溜溜的，覺得自己好沒用、好羨慕別人", type: "envy" },
-                { text: "C. 懶得想那麼多，船到橋頭自然直，過好今天最重要", type: "ennui" }
-            ]
-        },
-        {
-            question: "Q：父母或是長輩又開始碎念「你看人家誰誰誰……」，你當下的防禦機制是？",
-            options: [
-                { text: "A. 小火山瞬間爆發，直接頂嘴回去：「愛比較自己去當他爸媽啊！"", type: "anger" },
-                { text: "B. 眼神死，自動開啟耳機阻隔模式，心如止水", type: "ennui" },
-                { text: "C. 聽久了開始懷疑自己是不是真的很差，心裡委屈想哭", type: "sadness" }
-            ]
-        },
-        {
-            question: "Q：跟好朋友大吵一架，雙方冷戰中，你獨自走在回家的路上，心裡在想什麼？",
-            options: [
-                { text: "A. 氣死我了！絕不先低頭，看誰撐得久！", type: "anger" },
-                { text: "B. 好難過、好捨不得，不知道我們回不回得去了……", type: "sadness" },
-                { text: "C. 擔心這樣下去是不是會永遠失去這個朋友，心神不寧", type: "fear" }
-            ]
-        },
-        {
-            question: "Q：面臨人生中第一次重大抉擇（例如選科、升學），周圍人給了超多意見，你大腦的狀態是？",
-            options: [
-                { text: "A. 資訊過載，焦慮到失眠、頭痛、不知所措", type: "anxiety" },
-                { text: "B. 煩到極點，索性把資料全部推開：「不管了，隨便啦！"", type: "ennui" },
-                { text: "C. 感到無助與恐懼，不知道未來的路在哪裡", type: "fear" }
-            ]
-        }
+        { question: 'Q：學校舉辦大型晚會或舞蹈表演，輪到你上台前 5 分鐘，你在後台的狀態是？', options:[ { text: 'A. 心跳快得像要跳出胸口，瘋狂深呼吸確認動作，緊張到極點', type: 'anxiety' }, { text: 'B. 興奮到不行，跟夥伴擊掌大喊：「我們一定會超炸全場！』', type: 'joy' }, { text: 'C. 腦袋一片空白，手腳冰冷，超怕自己會不小心失誤出糗', type: 'fear' } ] },
+        { question: 'Q：老師臨時指派你擔任班級活動總召，要負責管秩序和分配工作，你心裡想的是？', options:[ { text: 'A. 興奮！最喜歡統籌和規劃，馬上開始列分工表', type: 'joy' }, { text: 'B. 壓力山大，擔心自己做不好被大家私底下抱怨', type: 'anxiety' }, { text: 'C. 眼神死，心裡狂翻白眼：『為什麼找我，好麻煩想拒絕。', type: 'ennui' } ] },
+        { question: 'Q：辛苦排練很久的節目，表演結束後卻聽到臺下有人在小聲嫌棄，你的第一反應是？', options:[ { text: 'A. 氣到不行！很想直接衝下台理論：『有本事你來跳啊！』', type: 'anger' }, { text: 'B. 鼻子酸酸的，躲到後台角落難過，覺得努力白費了', type: 'sadness' }, { text: 'C. 面無表情地冷笑：『不懂欣賞就算了，隨便你們講。', type: 'disgust' } ] },
+        { question: 'Q：社團學弟妹練習時態度散漫、講話不聽，作為學長姐的你此時狀態是？', options:[ { text: 'A. 氣到理智線斷裂，直接開罵建立威嚴', type: 'anger' }, { text: 'B. 氣到心累，覺得帶不動乾脆放推不管了', type: 'ennui' }, { text: 'C. 一邊覺得生氣，一邊又擔心是不是自己沒把方法教好', type: 'anxiety' } ] },
+        { question: 'Q：運動會大隊接力輪到你跑最後一棒，接棒時落後了，你的大腦瞬間運作是？', options:[ { text: 'A. 不管三七二十一，燃起全部鬥志狂奔追上去！', type: 'joy' }, { text: 'B. 緊張到腳步打結，大喊：『完蛋了要被全班笑死了！』', type: 'fear' }, { text: 'C. 邊跑邊覺得好累、好想放棄：『幹嘛把自己搞得這麼累……', type: 'ennui' } ] },
+        { question: 'Q：傳訊息給朋友問事情，對方明明在線上、已讀卻遲遲不回，你的內心劇場是？', options:[ { text: 'A. 焦慮炸裂：『我是不是講錯話惹他生氣了？他為什麼不回我？', type: 'anxiety' }, { text: 'B. 心裡有股莫名的火氣：『愛回不回隨便你，跩什麼跩。', type: 'anger' }, { text: 'C. 覺得有點孤單失落，心裡悶悶的', type: 'sadness' } ] },
+        { question: 'Q：手遊抽卡或演唱會門票，朋友一發入魂，而你卻保底還抽到最爛的，你會？', options:[ { text: 'A. 氣到想把手機直接摔了，非洲人竟是我自己！', type: 'anger' }, { text: 'B. 心裡酸到不行，滿懷嫉妒：『憑什麼他運氣那麼好……', type: 'envy' }, { text: 'C. 嘆口氣認命，反正我本來就是這種命運', type: 'ennui' } ] },
+        { question: 'Q：發了一則精心挑選的限時動態，過了好幾小時瀏覽人數寥寥無幾，你會？', options:[ { text: 'A. 尷尬癌發作，覺得自己剛剛發的好做作、好丟臉，秒刪！', type: 'embarrassment' }, { text: 'B. 默默覺得有點失落，懷疑自己是不是被大家冷落了', type: 'sadness' }, { text: 'C. 完全不在乎，滑過去就忘記了', type: 'ennui' } ] },
+        { question: 'Q：看到別人都在瘋某個流行迷因或穿搭，但你覺得超無聊，你的反應是？', options:[ { text: 'A. 滿臉問號，翻個白眼：『這到底哪裡好看，跟風盲目。', type: 'disgust' }, { text: 'B. 雖然覺得無聊，但為了怕被當成異類，還是偷偷去了解一下', type: 'fear' }, { text: 'C. 隨便啦，大家高興就好，我走我自己的路', type: 'joy' } ] },
+        { question: 'Q：深夜準備睡覺前又忍不住滑了一小時手機，看著時間越來越晚，你的心情是？', options:[ { text: 'A. 焦慮大爆炸：『死定了明天絕對爬不起來，黑眼圈一定超重！', type: 'anxiety' }, { text: 'B. 充滿罪惡感，覺得自己好廢、意志力好低落', type: 'sadness' }, { text: 'C. 管他的，爽就好，繼續刷下一部短影片', type: 'ennui' } ] },
+        { question: 'Q：大排長龍終於輪到你買最後一個想吃的麵包，結果在面前被前面的人買走，你當下會？', options:[ { text: 'A. 氣到想翻白眼，覺得今天運氣怎麼這麼背！', type: 'anger' }, { text: 'B. 委屈到快哭出來，今天怎麼連想吃個東西都不行……', type: 'sadness' }, { text: 'C. 算了，轉頭隨便買個餅乾也行，保持樂觀', type: 'joy' } ] },
+        { question: 'Q：好不容易精心搭配了一套衣服出門，結果一到學校發現跟別人大撞衫，你心裡想？', options:[ { text: 'A. 尬到極點，恨不得立刻套上外套把衣服遮住', type: 'embarrassment' }, { text: 'B. 眼神死，心裡狂翻白眼：『真倒楣，竟然跟Ta撞衫。', type: 'disgust' }, { text: 'C. 笑出來：『哇我們品味一樣耶！』甚至大方跟對方合照', type: 'joy' } ] },
+        { question: 'Q：上課肚子餓得咕嚕咕嚕叫超級大聲，旁邊剛好一片安靜，你的第一反應是？', options:[ { text: 'A. 瞬間臉紅到耳根，覺得全班都在看我，尷尬到想原地蒸發', type: 'embarrassment' }, { text: 'B. 緊張到心跳加速，深怕被隔壁同學聽到會笑話我', type: 'fear' }, { text: 'C. 偷偷拿出零食以光速塞進嘴裡解決', type: 'joy' } ] },
+        { question: 'Q：走在走廊上不小心左腳絆右腳，在眾人面前摔了一個大馬趴，你當下會？', options:[ { text: 'A. 尬到靈魂出竅，在地上裝死不想起來', type: 'embarrassment' }, { text: 'B. 迅速爬起來拍拍灰塵，大笑化解：『地心引力今天特別愛我！』', type: 'joy' }, { text: 'C. 覺得痛死又丟臉，眼眶含淚但硬要忍住', type: 'sadness' } ] },
+        { question: 'Q：夜深人靜躺在床上時，突然想到自己上週講過一句超蠢的話，你的大腦會？', options:[ { text: 'A. 無限回放，焦慮到在床上滾來滾去：『天啊我當時怎麼會這樣講！』', type: 'anxiety' }, { text: 'B. 覺得自己好笨、好社交殘障，深深陷入憂鬱', type: 'sadness' }, { text: 'C. 一巴掌拍醒自己：『算了啦，反正別人隔天就忘記了！』', type: 'joy' } ] },
+        { question: 'Q：看見身邊同學都有了明確夢想和目標，而自己卻還在混日子，你心裡的感受是？', options:[ { text: 'A. 感到一陣恐慌與焦慮，擔心自己會被世界拋棄', type: 'anxiety' }, { text: 'B. 心裡酸溜溜的，覺得自己好沒用、好羨慕別人', type: 'envy' }, { text: 'C. 懶得想那麼多，船到橋頭自然直，過好今天最重要', type: 'ennui' } ] },
+        { question: 'Q：父母或是長輩又開始碎念「你看人家誰誰誰……」，你當下的防禦機制是？', options:[ { text: 'A. 小火山瞬間爆發，直接頂嘴回去：『愛比較自己去當他爸媽啊！』', type: 'anger' }, { text: 'B. 眼神死，自動開啟耳機阻隔模式，心如止水', type: 'ennui' }, { text: 'C. 聽久了開始懷疑自己是不是真的很差，心裡委屈想哭', type: 'sadness' } ] },
+        { question: 'Q：跟好朋友大吵一架，雙方冷戰中，你獨自走在回家的路上，心裡在想什麼？', options:[ { text: 'A. 氣死我了！絕不先低頭，看誰撐得久！', type: 'anger' }, { text: 'B. 好難過、好捨不得，不知道我們回不回得去了……', type: 'sadness' }, { text: 'C. 擔心這樣下去是不是會永遠失去這個朋友，心神不寧', type: 'fear' } ] },
+        { question: 'Q：面臨人生中第一次重大抉擇（例如選科、升學），周圍人給了超多意見，你大腦的狀態是？', options:[ { text: 'A. 資訊過載，焦慮到失眠、頭痛、不知所措', type: 'anxiety' }, { text: 'B. 煩到極點，索性把資料全部推開：『不管了，隨便啦！』', type: 'ennui' }, { text: 'C. 感到無助與恐懼，不知道未來的路在哪裡', type: 'fear' } ] }
     ];
 
     const defaultScores = { anxiety: 0, ennui: 0, anger: 0, embarrassment: 0, disgust: 0, joy: 0, sadness: 0, fear: 0, envy: 0 };

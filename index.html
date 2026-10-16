@@ -24,8 +24,6 @@
         .result-desc { font-size: 15px; line-height: 1.6; color: #555; background: #fdf2f2; padding: 18px; border-radius: 10px; margin: 15px 0; border-left: 5px solid var(--accent); text-align: left; }
         .restart-btn { background: var(--accent); color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
         .restart-btn:hover { background: #fa5252; }
-        .score-breakdown { text-align:left; margin-top:10px; }
-        .score-breakdown li { margin:4px 0; font-size:14px; color:#444; }
         .last-result { font-size:13px; color:#666; margin-top:8px; text-align:left; }
         @media (max-width:520px){ .container{ padding:20px; border-radius:12px; } h1{ font-size:20px; } }
     </style>
@@ -49,8 +47,6 @@
             <div id="img-placeholder" class="img-placeholder-text">（在此放入角色插圖 JPG/PNG）</div>
         </div>
         <div id="result-content" class="result-desc"></div>
-
-        <div id="score-list" class="score-breakdown" aria-hidden="false"></div>
 
         <button class="restart-btn" id="restartBtn">再測一次 🔄</button>
     </div>
@@ -109,7 +105,6 @@
     const resultContent = document.getElementById('result-content');
     const resultImg = document.getElementById('result-img');
     const imgPlaceholder = document.getElementById('img-placeholder');
-    const scoreList = document.getElementById('score-list');
     const lastResultEl = document.getElementById('last-result');
     const restartBtn = document.getElementById('restartBtn');
 
@@ -189,9 +184,6 @@
             resultImg.style.display = 'none';
             imgPlaceholder.style.display = 'block';
         }
-
-        const listItems = Object.keys(scores).map(k => `<li><strong>${k}</strong>：${scores[k]}</li>`).join('');
-        scoreList.innerHTML = `<strong>分數明細</strong><ul style="margin:8px 0 0 16px;padding:0">${listItems}</ul>`;
 
         const saved = { timestamp: Date.now(), primary: primaryType, tied, scores };
         try { localStorage.setItem('moodmart_lastResult', JSON.stringify(saved)); } catch(e) { }

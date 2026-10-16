@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>大腦總部生存危機測驗 | Mood Mart</title>
+    <style>
+        :root{ --accent:#ff6b6b; --bg:#f7f9fc; --card:#fff; --muted:#666; }
+        *{box-sizing:border-box}
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 6px 22px rgba(0,0,0,0.08); max-width: 640px; width: 100%; text-align: center; }
+        h1 { font-size: 24px; color: var(--accent); margin-bottom: 5px; }
+        p.subtitle { font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+        .progress-bar { font-size: 13px; color: #888; margin-bottom: 12px; font-weight: 700; }
+        .question-box { font-size: 17px; font-weight: 700; margin-bottom: 18px; text-align: left; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        button.option-btn { background: #fff; border: 2px solid #e1e8ed; padding: 14px 18px; border-radius: 10px; font-size: 15px; text-align: left; cursor: pointer; transition: all 0.15s; color: #2c3e50; }
+        button.option-btn:hover, button.option-btn:focus { border-color: var(--accent); background: #fff5f5; outline: none; transform: translateY(-2px); }
+        button.option-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
+        .result-box { display: none; text-align: center; }
+        .result-img-container { width: 150px; height: 150px; margin: 0 auto 15px auto; border-radius: 50%; background: #ffe3e3; display:flex; justify-content:center; align-items:center; overflow: hidden; border: 3px solid var(--accent); }
+        .result-img-container img { width:100%; height:100%; object-fit:cover; display:block; }
+        .img-placeholder-text { font-size: 12px; color: var(--accent); padding: 10px; }
+        .result-desc { font-size: 15px; line-height: 1.6; color: #555; background: #fdf2f2; padding: 18px; border-radius: 10px; margin: 15px 0; border-left: 5px solid var(--accent); text-align: left; }
+        .restart-btn { background: var(--accent); color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .restart-btn:hover { background: #fa5252; }
+        .score-breakdown { text-align:left; margin-top:10px; }
+        .score-breakdown li { margin:4px 0; font-size:14px; color:#444; }
+        .last-result { font-size:13px; color:#666; margin-top:8px; text-align:left; }
+        @media (max-width:520px){ .container{ padding:20px; border-radius:12px; } h1{ font-size:20px; } }
+    </style>
+</head>
+<body>
+
+<div class="container" role="application" aria-labelledby="quizTitle">
+    <div id="quiz-screen">
+        <h1 id="quizTitle">🧠 大腦總部生存危機測驗</h1>
+        <p class="subtitle">每次隨機 10 題，測出你今天的心情是被哪位小精靈接管！</p>
+        <div id="progress-bar" class="progress-bar" aria-live="polite">第 1 題 / 共 10 題</div>
+        <div id="question-container" class="question-box" aria-live="polite">載入中...</div>
+        <div id="options-container" class="options-container" role="list"></div>
+        <div id="last-result" class="last-result" aria-live="polite"></div>
+    </div>
+
+    <div id="result-screen" class="result-box" aria-live="polite">
+        <h1>✨ 測驗結果揭曉 ✨</h1>
+        <div class="result-img-container" aria-hidden="false">
+            <img id="result-img" src="" alt="角色插圖" style="display:none;">
+            <div id="img-placeholder" class="img-placeholder-text">（在此放入角色插圖 JPG/PNG）</div>
+        </div>
+        <div id="result-content" class="result-desc"></div>
+
+        <div id="score-list" class="score-breakdown" aria-hidden="false"></div>
+
+        <button class="restart-btn" id="restartBtn">再測一次 🔄</button>
+    </div>
+</div>
+
+<script>
+    const allQuestions = [
+        { question: "Q：學校舉辦大型晚會或舞蹈表演，輪到你上台前 5 分鐘，你在後台的狀態是��",
+          options:[
+            { text: "A. 心跳快得像要跳出胸口，瘋狂深呼吸確認動作，緊張到極點", type: "anxiety" },
+            { text: "B. 興奮到不行，跟夥伴擊掌大喊：「我們一定會超炸全場！」", type: "joy" },
+            { text: "C. 腦袋一片空白，手腳冰冷，超怕自己會不小心失誤出糗", type: "fear" }
+          ]
+        },
+        { question: "Q：老師臨時指派你擔任班級活動總召，要負責管秩序和分配工作，你心裡想的是？",
+          options:[
+            { text: "A. 興奮！最喜歡統籌和規劃，馬上開始列分工表", type: "joy" },
+            { text: "B. 壓力山大，擔心自己做不好被大家私底下抱怨", type: "anxiety" },
+            { text: "C. 眼神死，心裡狂翻白眼：「為什麼找我，好麻煩想拒絕。」", type: "ennui" }
+          ]
+        },
+        { question: "Q：辛苦排練很久的節目，表演結束後卻聽到臺下有人在小聲嫌棄，你的第一反應是？",
+          options:[
+            { text: "A. 氣到不行！很想直接衝下台理論：「有本事你來跳啊！」", type: "anger" },
+            { text: "B. 鼻子酸酸的，躲到後台角落難過，覺得努力白費了", type: "sadness" },
+            { text: "C. 面無表情地冷笑：「不懂欣賞就算了，隨便你們講。」", type: "disgust" }
+          ]
+        },
+        { question: "Q：社團學弟妹練習時態度散漫、講話不聽，作為學長姐的你此時狀態是？",
+          options:[
+            { text: "A. 氣到理智線斷裂，直接開罵建立威嚴", type: "anger" },
+            { text: "B. 氣到心累，覺得帶不動乾脆放推不管了", type: "ennui" },
+            { text: "C. 一邊覺得生氣，一邊又擔心是不是自己沒把方法教好", type: "anxiety" }
+          ]
+        },
+        { question: "Q：運動會大隊接力輪到你跑最後一棒，接棒時落後了，你的大腦瞬間運作是？",
+          options:[
+            { text: "A. 不管三七二十一，燃起全部鬥志狂奔追上去！", type: "joy" },
+            { text: "B. 緊張到腳步打結，大喊：「完蛋了要被全班笑死了！」", type: "fear" },
+            { text: "C. 邊跑邊覺得好累、好想放棄：「幹嘛把自己搞得這麼累……」", type: "ennui" }
+          ]
+        },
+        { question: "Q：傳訊息給朋友問事情，對方明明在線上、已讀卻遲遲不回，你的內心劇場是？",
+          options:[
+            { text: "A. 焦慮炸裂：「我是不是講錯話惹他生氣了？他為什麼不回我？"", type: "anxiety" },
+            { text: "B. 心裡有股莫名的火氣：「愛回不回隨便你，跩什麼跩。」", type: "anger" },
+            { text: "C. 覺得有點孤單失落，心裡悶悶的", type: "sadness" }
+          ]
+        },
+        { question: "Q：手遊抽卡或演唱會門票，朋友一發入魂，而你卻保底還抽到最爛的，你會？",
+          options:[
+            { text: "A. 氣到想把手機直接摔了，非洲人竟是我自己！", type: "anger" },
+            { text: "B. 心裡酸到不行，滿懷嫉妒：「憑什麼他運氣那麼好……」", type: "envy" },
+            { text: "C. 嘆口氣認命，反正我本來就是這種命運", type: "ennui" }
+          ]
+        },
+        { question: "Q：發了一則精心挑選的限時動態，過了好幾小時瀏覽人數寥寥無幾，你會？",
+          options:[
+            { text: "A. 尷尬癌發作，覺得自己剛剛發的好做作、好丟臉，秒刪！", type: "embarrassment" },
+            { text: "B. 默默覺得有點失落，懷疑自己是不是被大家冷落了", type: "sadness" },
+            { text: "C. 完全不在乎，滑過去就忘記了", type: "ennui" }
+          ]
+        }
+    ];
+
+    const defaultScores = { anxiety: 0, ennui: 0, anger: 0, embarrassment: 0, disgust: 0, joy: 0, sadness: 0, fear: 0, envy: 0 };
+
+    const resultData = {
+        anxiety: { title: "🟠 今日代表：焦焦（橙色焦焦吐司卡）", desc: "<b>你的狀態</b>：腦袋裡的小劇場正在瘋烈加班，擔心這個擔心那個。<br><b>給你的解方</b>：其實你已經做得夠好了！允許自己把警報器按暫停，拿張吐司卡寫下心事壓壓驚吧！", imgName: "images/anxiety_toast.png" },
+        ennui: { title: "🟣 今日代表：倦倦（紫色可頌卡）", desc: "<b>你的狀態</b>：電量剩 5%，靈魂只想躺平，對萬物保持冷漠與厭世。<br><b>給你的解方</b>：沒關係，躺平也是一種生活態度。今天允許自己進入省電模式！", imgName: "images/ennui_croissant.png" },
+        anger: { title: "🔴 今日代表：怒怒（紅色脆餅卡）", desc: "<b>你的狀態</b>��心裡有一股快壓不住的小火山，看什麼都想吐槽。<br><b>給你的解方</b>：把不爽全寫在卡片上，徹底釋放你的小宇宙！", imgName: "images/anger_snack.png" },
+        embarrassment: { title: "🩷 今日代表：尬尬（粉紅馬卡龍卡）", desc: "<b>你的狀態</b>：尷尬癌發作，只想把帽T拉到最高把自己藏起來。<br><b>給你的解方</b>：深呼吸，沒人會一直記得小失誤，把自己當作馬卡龍一樣好好呵護吧！", imgName: "images/embarrassment_macaron.png" },
+        disgust: { title: "💚 今日代表：厭厭（綠色三明治卡）", desc: "<b>你的狀態</b>：挑剔又傲嬌，滿臉寫著「離我遠點」。<br><b>給你的解方</b>：保持你的獨特品味，今天的生活原則由你自己決定！", imgName: "images/disgust_sandwich.png" },
+        joy: { title: "🟡 今日代表：樂樂（黃色檸檬塔卡）", desc: "<b>你的狀態</b>：元氣滿滿，隨時準備閃閃發光！<br><b>給你的解方</b>：把這道甜甜的光芒存進記憶庫，帶著好心情去拿你的獎勵吧！", imgName: "images/joy_tart.png" },
+        sadness: { title: "🔵 今日代表：憂憂（藍色貝果卡）", desc: "<b>你的狀態</b>：心裡沉甸甸的，想給自己一個安靜的空間。<br><b>給你的解方</b>：卸下防備，大腦總部今天允許你安安靜靜地休息療傷。", imgName: "images/sadness_bagel.png" },
+        fear: { title: "💜 今日代表：驚驚（紫薯餅卡）", desc: "<b>你的狀態</b>：雷達全開，隨時戒備突發狀況。<br><b>給你的解方</b>：一切都在安全範圍內，放輕鬆，深呼吸！", imgName: "images/fear_snack.png" },
+        envy: { title: "🩵 今日代表：慕慕（薄荷綠小杯子蛋糕卡）", desc: "<b>你的狀態</b>：心裡酸溜溜的，忍不住羨慕別人的閃閃發光。<br><b>給你的解方</b>：看見別人的好之餘，也別忘了你也有獨一無二的美麗！", imgName: "images/envy_cupcake.png" }
+    };
+
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let scores = {...defaultScores};
+    const TOTAL_QUESTIONS = 10;
+
+    function shuffleArray(arr){ const a = arr.slice(); for(let i = a.length -1; i > 0; i--){ const j = Math.floor(Math.random() * (i+1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+    const progressEl = document.getElementById('progress-bar');
+    const questionEl = document.getElementById('question-container');
+    const optionsContainer = document.getElementById('options-container');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const resultContent = document.getElementById('result-content');
+    const resultImg = document.getElementById('result-img');
+    const imgPlaceholder = document.getElementById('img-placeholder');
+    const scoreList = document.getElementById('score-list');
+    const lastResultEl = document.getElementById('last-result');
+    const restartBtn = document.getElementById('restartBtn');
+
+    function startQuiz(){
+        currentQuestions = shuffleArray(allQuestions).slice(0, TOTAL_QUESTIONS).map(q => { return { question: q.question, options: shuffleArray(q.options) }; });
+        currentQuestionIndex = 0; scores = {...defaultScores}; quizScreen.style.display = 'block'; resultScreen.style.display = 'none'; renderQuestion(); showLastResult();
+    }
+
+    function renderQuestion(){ const q = currentQuestions[currentQuestionIndex]; progressEl.innerText = `第 ${currentQuestionIndex + 1} 題 / 共 ${TOTAL_QUESTIONS} 題`; questionEl.innerText = q.question; optionsContainer.innerHTML = ''; q.options.forEach((opt, idx) => { const btn = document.createElement('button'); btn.className = 'option-btn'; btn.type = 'button'; btn.innerText = opt.text; btn.setAttribute('data-type', opt.type); btn.setAttribute('role', 'button'); btn.setAttribute('aria-pressed', 'false'); btn.tabIndex = 0; btn.addEventListener('click', () => handleSelect(btn, opt.type)); btn.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); btn.click(); } }); optionsContainer.appendChild(btn); }); }
+
+    function handleSelect(btn, type){ Array.from(optionsContainer.children).forEach(b => { b.disabled = true; b.setAttribute('aria-pressed', 'true'); }); scores[type] = (scores[type] || 0) + 1; setTimeout(() => { currentQuestionIndex++; if(currentQuestionIndex < currentQuestions.length){ renderQuestion(); } else { showResult(); } }, 220); }
+
+    function showResult(){ quizScreen.style.display = 'none'; resultScreen.style.display = 'block'; const entries = Object.entries(scores); let maxScore = Math.max(...entries.map(e => e[1])); const topTypes = entries.filter(e => e[1] === maxScore && maxScore > 0).map(e => e[0]); let primaryType = topTypes.length > 0 ? topTypes[0] : 'anxiety'; const tied = topTypes; const primaryResult = resultData[primaryType] || resultData['anxiety']; let html = `<b>${primaryResult.title}</b><br><br>${primaryResult.desc}`; if(tied.length > 1){ html += `<hr style="margin:10px 0"><div><b>平手提示</b>：今天你同時也展現了： ${tied.map(t => `<span style="color:#333">「${resultData[t].title.replace(/<.*?>/g,'')}」</span>`).join('、')}</div>`; } resultContent.innerHTML = html; if(primaryResult.imgName){ resultImg.src = primaryResult.imgName; resultImg.style.display = 'none'; imgPlaceholder.style.display = 'block'; resultImg.onload = () => { resultImg.style.display = 'block'; imgPlaceholder.style.display = 'none'; }; resultImg.onerror = () => { resultImg.style.display = 'none'; imgPlaceholder.style.display = 'block'; }; } else { resultImg.style.display = 'none'; imgPlaceholder.style.display = 'block'; } const listItems = Object.keys(scores).map(k => `<li><strong>${k}</strong>：${scores[k]}</li>`).join(''); scoreList.innerHTML = `<strong>分數明細</strong><ul style="margin:8px 0 0 16px;padding:0">${listItems}</ul>`; const saved = { timestamp: Date.now(), primary: primaryType, tied, scores }; try { localStorage.setItem('moodmart_lastResult', JSON.stringify(saved)); } catch(e) { }
+    }
+
+    function showLastResult(){ try { const raw = localStorage.getItem('moodmart_lastResult'); if(!raw){ lastResultEl.innerText = ''; return; } const data = JSON.parse(raw); const ts = new Date(data.timestamp); lastResultEl.innerHTML = `上次測驗：${ts.toLocaleString()}，代表：${data.primary}${data.tied && data.tied.length>1 ? '（並列：'+data.tied.join(',')+'）':''}`; } catch(e){ lastResultEl.innerText = ''; } }
+
+    restartBtn.addEventListener('click', startQuiz);
+    startQuiz();
+</script>
+
+</body>
+</html>
